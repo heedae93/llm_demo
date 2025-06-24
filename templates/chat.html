@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>LLM 단어 챗봇</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 40px; }
+    input, button { font-size: 16px; padding: 8px; }
+    .result { margin-top: 20px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h2>🤖 학습된 LLM에게 단어를 입력하세요</h2>
+  <form method="POST">
+    <input type="text" name="user_input" placeholder="예: 나는" value="{{ user_input }}" required>
+    <button type="submit">예측</button>
+  </form>
+
+  {% if result %}
+    <div class="result">
+      <strong>결과:</strong> {{ result }}
+    </div>
+  {% endif %}
+</body>
+</html>
