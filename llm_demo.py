@@ -28,34 +28,43 @@ for i in range(len(tokens) - 1):
     # 정답 단어
     y = torch.tensor([word2idx[tokens[i + 1]]])
     data.append((x, y))
-# print("\n학습 샘플:")
+# tensor는 PyTorch에서 사용하는 기본 데이터 구조로, 쉽게 말해 **숫자를 담는 다차원 배열 예를들어 tensor([2]) 는 tensor 자료구조에 2라는 값이 들어가 있는 것.
 
+
+print("📦 학습 전 최종 데이터 셋:")
+for i, (x, y) in enumerate(data):
+    print(f"{i+1}) 입력 텐서: {x}, 정답 텐서: {y}")
+
+print("📦 data에 저장된 인덱스의 실제 문자열 값들 :")
 for x, y in data:
     print(f"입력: {idx2word[x.item()]} → 정답: {idx2word[y.item()]}")
 
 
 
-# 4️⃣ 아주 간단한 LSTM 언어모델 정의 ( PyTorch의 모델 기본형인 nn.Module을 상속받은 신경망 클래스 )
+# 4️⃣ 아주 간단한 LSTM 언어모델 정의 ( PyTorch의 모델 기본형인 nn.Module을 상속받은 신경망 클래스 ) 및 세팅
 class MiniLSTM(nn.Module):
 
     # 생성자
     def __init__(self, vocab_size, embed_dim, hidden_dim):
         super().__init__()
-        self.embed = nn.Embedding(vocab_size, embed_dim)
+        self.embed = nn.Embedding(vocab_size, embed_dim) # 전체 단어의 수 , 차원 셋팅
         self.lstm = nn.LSTM(embed_dim, hidden_dim)
         self.fc = nn.Linear(hidden_dim, vocab_size)
 
     # 모델 실행 메서드
     def forward(self, x):
-        x = self.embed(x)  # 단어를 임베딩 벡터로 변환
-        x, _ = self.lstm(x.view(len(x), 1, -1))  # LSTM 처리
-        out = self.fc(x[-1])  # 마지막 시간의 출력 → 분류
+        x = self.embed(x)                                   # 단어 인덱스를 임베딩 벡터로 변환
+        x, _ = self.lstm(x.view(len(x), 1, -1))             # LSTM 처리
+        out = self.fc(x[-1])                                # 마지막 시간의 출력 → 분류
         return out
 
-# 5️⃣ 모델, 손실함수, 옵티마이저 설정 ( 여기 까지는 아무런 학습도 진행된 것이 아님, 학습할 모델의 기본 셋팅을 한다고 보면 됨 )
+
 vocab_size = len(word2idx)
 # 모델 인스턴스 생성
-model = MiniLSTM(vocab_size, embed_dim=10, hidden_dim=20)
+model = MiniLSTM(vocab_size, embed_dim=5, hidden_dim=5)
+# 총 파라미터 수 확인
+total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+print(f"\n📦 총 파라미터 수: {total_params}")
 #예측값과 정답 비교에 사용할 손실함수 설정 ( 손실 함수란 모델의 예측값과 실제 정답 사이의 오차를 수치르 계산하는 함수 , 예측이 틀리면 값이 커지고 맞으면 값이 작아짐 )
 loss_fn = nn.CrossEntropyLoss()
 #모델 파라미터를 업데이트할 옵티마이저 설정 ( 손실 함수가 계산한 오차를 바탕으로 모델의 가중치를 바꾸는 역할 )
@@ -75,7 +84,7 @@ for epoch in range(10):                  # 🔁 전체 학습을 10번 반복
         optimizer.zero_grad()            # 🔄 이전 계산한 기울기 초기화
         pred = model(x)                  # ⛳️ 모델 예측값 계산
         loss = loss_fn(pred, y)          # ❌ 예측값과 정답 차이 계산 (손실)
-        loss.backward()                  # 🔧 오차를 기반으로 가중치 변화량 계
+        loss.backward()                  # 🔧 오차를 기반으로 가중치 변화량 계산
         optimizer.step()                 # 💡 파라미터 갱신 ( # 💡 가중치 실제로 업데이트!)
         total_loss += loss.item()        # 📊 손실 누적
     print(f"Epoch {epoch+1}, Loss: {total_loss:.4f}")
