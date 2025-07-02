@@ -63,7 +63,7 @@ class MiniLSTM(nn.Module):
 
 vocab_size = len(word2idx)
 # 모델 인스턴스 생성 , 이 부분에 입력한 숫자로 모델의 파라미터가 정해짐
-model = MiniLSTM(vocab_size, embed_dim=5, hidden_dim=5)
+model = MiniLSTM(vocab_size, embed_dim=10, hidden_dim=10)
 # 총 파라미터 수 확인
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"\n📦 총 파라미터 수: {total_params}")
