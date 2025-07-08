@@ -8,7 +8,7 @@ import torch.optim as optim
 
 
 # 1️⃣ 학습 데이터 정의
-corpus = ["나는 사과를 먹었다"]
+corpus = ["나는 어제 사과를 먹었는데 정말 달콤했다."]
 
 # 2️⃣ 단어 사전 생성 ( 텍스트를 숫자로 변환해야 한다. 왜냐하면 다음 단계인 임베딩 과정에서 숫자 인덱스만 입력으로 받을 수 있기 때문 )
 token_list = list(set(" ".join(corpus).split()))
@@ -63,7 +63,7 @@ class MiniLSTM(nn.Module):
 
 vocab_size = len(word2idx)
 # 모델 인스턴스 생성 , 이 부분에 입력한 숫자로 모델의 파라미터가 정해짐
-model = MiniLSTM(vocab_size, embed_dim=10, hidden_dim=10)
+model = MiniLSTM(vocab_size, embed_dim=5, hidden_dim=5)
 # 총 파라미터 수 확인
 total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"\n📦 총 파라미터 수: {total_params}")
@@ -133,4 +133,8 @@ def predict(word):
 
 print("\n🔮 예측 결과:")
 predict("나는")
+predict("어제")
 predict("사과를")
+predict("먹었는데")
+predict("정말")
+predict("달콤했다.")
